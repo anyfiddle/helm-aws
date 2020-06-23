@@ -1,11 +1,18 @@
 FROM alpine/helm
 
-ENV GLIBC_VER=2.31-r0
+ARG GLIBC_VER=2.31-r0
+ARG KUBE_VERSION="1.16.8"
+
 
 # install glibc compatibility for alpine
 RUN apk --no-cache add \
         binutils \
-        curl 
+        ca-certificates \
+        curl
+
+RUN curl -L https://storage.googleapis.com/kubernetes-release/release/v$KUBE_VERSION/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && \
+    chmod +x /usr/local/bin/kubectl
+
 RUN curl -sL https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub -o /etc/apk/keys/sgerrand.rsa.pub \
     && curl -sLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VER}/glibc-${GLIBC_VER}.apk \
     && curl -sLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VER}/glibc-bin-${GLIBC_VER}.apk \
